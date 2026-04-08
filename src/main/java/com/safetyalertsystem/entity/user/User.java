@@ -46,6 +46,8 @@ public class User {
 
     private BloodGroup bloodGroup;
 
+    private boolean verified = false;
+
     public Long getId() {
         return id;
     }
@@ -128,5 +130,13 @@ public class User {
 
     public void setBloodGroup(BloodGroup bloodGroup) {
         this.bloodGroup = bloodGroup;
+    }
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
     }
 }

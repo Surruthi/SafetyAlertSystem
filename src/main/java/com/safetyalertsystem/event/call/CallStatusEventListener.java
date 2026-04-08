@@ -2,6 +2,7 @@ package com.safetyalertsystem.event.call;
 
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -43,11 +44,13 @@ public class CallStatusEventListener {
             return;
         }
 
-        if (attempt.getAttemptCount() < MAX_RETRIES) {
-            attempt.setAttemptCount(attempt.getAttemptCount() + 1);
-            repository.save(attempt);
+        if (attempt.getAttemptCount() + 1 < MAX_RETRIES) {
 
-            callManager.makeCall(attempt);
+            CallAttempt newAttempt = createNewAttemptForRetry(attempt);
+
+            repository.save(newAttempt);
+
+            callManager.makeCall(newAttempt);
             return;
         }
 
@@ -64,9 +67,12 @@ public class CallStatusEventListener {
         {
             CallAttempt newAttempt = new CallAttempt();
             newAttempt.setAlertId(attempt.getAlertId());
+            newAttempt.setUserId(attempt.getUserId());
             newAttempt.setPhoneNumber(nextNumber.get());
             newAttempt.setAttemptCount(0);
+            newAttempt.setStatus(CallStatus.QUEUED);
             newAttempt.setCompleted(false);
+            newAttempt.setCreatedAt(LocalDateTime.now());
 
             repository.save(newAttempt);
 
@@ -96,5 +102,19 @@ public class CallStatusEventListener {
                         .map(PhoneNumber::getNumber)
                         .collect(Collectors.toList()))
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+    }
+
+    private CallAttempt createNewAttemptForRetry(CallAttempt previousAttempt) 
+    {   
+        CallAttempt newAttempt = new CallAttempt();
+        newAttempt.setAlertId(previousAttempt.getAlertId());
+        newAttempt.setUserId(previousAttempt.getUserId());
+        newAttempt.setPhoneNumber(previousAttempt.getPhoneNumber());
+        newAttempt.setAttemptCount(previousAttempt.getAttemptCount() + 1);
+        newAttempt.setStatus(CallStatus.QUEUED);
+        newAttempt.setCompleted(false);
+        newAttempt.setCreatedAt(LocalDateTime.now());
+
+        return newAttempt;
     }
 }

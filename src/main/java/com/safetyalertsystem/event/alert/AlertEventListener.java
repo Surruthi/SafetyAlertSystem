@@ -1,4 +1,4 @@
-package com.safetyalertsystem.event.call;
+package com.safetyalertsystem.event.alert;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,7 +38,6 @@ public class AlertEventListener {
         attempt.setCompleted(false);
         attempt.setCreatedAt(LocalDateTime.now());
         
-
         callAttemptRepository.save(attempt);
         
         callManager.makeCall(attempt);

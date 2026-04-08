@@ -19,13 +19,13 @@ public class TwilioVoiceController
         this.twilioVoiceService = twilioVoiceService;
     }
 
-    @PostMapping("/start")
+    @PostMapping(value = "/start", produces = "application/xml")
     public String startVoice() 
     {
         return twilioVoiceService.constructSystemResponse("Hello, You can speak now.");
     }
 
-    @PostMapping("/process-speech")
+    @PostMapping(value = "/process-speech", produces = "application/xml")
     public String processSpeech(
             @RequestParam(value = "SpeechResult", required = false) String speech,
             @RequestParam("CallSid") String callSid) 
@@ -40,7 +40,7 @@ public class TwilioVoiceController
         return twilioVoiceService.constructSystemResponse(reply);
     }
 
-    @PostMapping("/status")
+    @PostMapping(value = "/status", produces = "application/xml")
     public void callStatusCallback(
             @RequestParam("CallSid") String callSid,
             @RequestParam("CallStatus") String status) 

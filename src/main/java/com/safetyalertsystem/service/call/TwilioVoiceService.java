@@ -31,9 +31,12 @@ public class TwilioVoiceService
     
     public String constructSystemResponse(String systemResponse) 
     {
+        System.out.println("*** : " + systemResponse);
+
+        String webhookUrl = "https://nongenerative-suably-marybeth.ngrok-free.dev/safetyalertsystem/voice/process-speech";
         Gather gather = new Gather.Builder()
             .inputs(Arrays.asList(Gather.Input.SPEECH))
-            .action("/voice/process-speech")
+            .action(webhookUrl)
             .method(HttpMethod.POST)
             .timeout(5)
             .speechTimeout("auto")

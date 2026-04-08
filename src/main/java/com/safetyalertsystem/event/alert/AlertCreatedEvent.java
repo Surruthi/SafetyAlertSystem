@@ -1,4 +1,4 @@
-package com.safetyalertsystem.event.call;
+package com.safetyalertsystem.event.alert;
 
 import java.util.List;
 

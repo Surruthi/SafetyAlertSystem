@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import com.safetyalertsystem.entity.user.Address;
@@ -13,6 +15,7 @@ import com.safetyalertsystem.entity.user.EmergencyContact;
 import com.safetyalertsystem.entity.user.MedicalRecord;
 import com.safetyalertsystem.entity.user.PhoneNumber;
 import com.safetyalertsystem.entity.user.User;
+import com.safetyalertsystem.event.authentication.SendOtpEvent;
 import com.safetyalertsystem.repository.user.UserRepository;
 import com.safetyalertsystem.model.user.requestdto.EmergencyContactRequestDTO;
 import com.safetyalertsystem.model.user.requestdto.UserRequestDTO;
@@ -29,6 +32,9 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -41,7 +47,9 @@ public class UserService {
 
             User savedUser = userRepository.save(user);
 
-            return mapToResponse(savedUser);
+            eventPublisher.publishEvent(new SendOtpEvent(this, savedUser));
+
+            return mapToUserIdResponse(savedUser);
         } 
         catch (Exception ex) 
         {
@@ -215,6 +223,7 @@ public class UserService {
         user.setDateOfBirth(userRequestDTO.getDateOfBirth());
         user.setGender(userRequestDTO.getGender());
         user.setBloodGroup(userRequestDTO.getBloodGroup());
+        user.setVerified(false);
 
         //Phone Numbers
         List<PhoneNumber> phoneNumbers = userRequestDTO.getPhoneNumbers()
@@ -304,6 +313,13 @@ public class UserService {
         }
     }
 
+    private UserResponseDTO mapToUserIdResponse(User user) 
+    {
+        UserResponseDTO response = new UserResponseDTO();
+        response.setId(user.getId());
+        return response;
+    }
+
     private UserResponseDTO mapToResponse(User user) {
 
         UserResponseDTO response = new UserResponseDTO();
@@ -375,5 +391,22 @@ public class UserService {
         }
 
         return response;
+    }
+
+    public UserResponseDTO login(String phoneNumber) 
+    {
+        User user = getUserByPhoneNumber(phoneNumber);
+
+        eventPublisher.publishEvent(new SendOtpEvent(this, user));
+
+        return mapToUserIdResponse(user);
+    }
+
+    public void updateUserByPhoneNumber(String phoneNumber) 
+    {
+         User user = getUserByPhoneNumber(phoneNumber);
+
+         user.setVerified(true);
+         userRepository.save(user);
     }
 }

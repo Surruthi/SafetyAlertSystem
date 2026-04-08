@@ -13,7 +13,7 @@ import com.safetyalertsystem.model.alert.requestdto.AlertRequestDTO;
 import com.safetyalertsystem.model.alert.requestdto.AlertUserDTO;
 import com.safetyalertsystem.model.alert.responsedto.AlertResponseDTO;
 import com.safetyalertsystem.entity.user.User;
-import com.safetyalertsystem.event.call.AlertCreatedEvent;
+import com.safetyalertsystem.event.alert.AlertCreatedEvent;
 import com.safetyalertsystem.service.user.UserService;
 
 @Service
@@ -41,10 +41,10 @@ public class AlertService
 
             Alert savedAlert = alertRepository.save(alert);
 
-            // AlertCreatedEvent event = new AlertCreatedEvent(
-            //         savedAlert.getId(), savedAlert.getUser().getId(), savedAlert.getUser().getPhoneNumbers());
+            AlertCreatedEvent event = new AlertCreatedEvent(
+                    savedAlert.getId(), savedAlert.getUser().getId(), savedAlert.getUser().getPhoneNumbers());
 
-            // eventPublisher.publishEvent(event);
+            eventPublisher.publishEvent(event);
 
             return mapToResponse(savedAlert);
         } 
@@ -71,7 +71,6 @@ public class AlertService
     {
         if (locationDTO == null) 
         {
-
             // handle the case by getting the location from various source in separate
             // thread.
 

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.safetyalertsystem.model.authentication.OtpRequestDTO;
 import com.safetyalertsystem.model.user.requestdto.UserRequestDTO;
 import com.safetyalertsystem.model.user.requestwrapper.UserRequestWrapper;
 import com.safetyalertsystem.model.user.responsedto.UserResponseDTO;
@@ -75,5 +76,15 @@ public class UserController {
         userService.deleteUserById(id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserResponseWrapper> login(@RequestBody OtpRequestDTO request) {
+        UserResponseDTO response = userService.login(
+                request.getPhoneNumber()
+        );
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new UserResponseWrapper(List.of(response)));
     }
 }
