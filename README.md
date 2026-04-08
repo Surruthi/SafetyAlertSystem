@@ -1,17 +1,18 @@
 # SafetyAlertSystem
 
-JAVA - 21.0.8
-Spring Boot - 3.2.2
-Maven - 3.9.11
-Twilio - 11.0.0
+- JAVA : 21.0.8
+- Spring Boot : 3.2.2
+- Maven : 3.9.11
+- Twilio : 11.0.0
+- POSTGRES : 14.20
 
-## DATABASE QUERIES
-## POSTGRES - 14.20
+#### DATABASE QUERIES
 
-DATABASE NAME : SafetyAlertSystem
+**DATABASE : SafetyAlertSystem**
 
 TABLE : addresses
 
+```
 CREATE TABLE addresses (
     id BIGSERIAL PRIMARY KEY,
     address_line1 VARCHAR(255),
@@ -23,9 +24,11 @@ CREATE TABLE addresses (
     user_id BIGINT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(id)
 );
+```
 
 TABLE : users
 
+```
 CREATE TABLE users (
     id BIGINT PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
@@ -36,9 +39,11 @@ CREATE TABLE users (
     blood_group VARCHAR(20),
     verified BOOLEAN
 );
+```
 
 TABLE : emergency_contacts
 
+```
 CREATE TABLE emergency_contacts (
     id BIGINT PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
@@ -48,22 +53,25 @@ CREATE TABLE emergency_contacts (
     user_id BIGINT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user(id)
 );
+```
 
 TABLE : phone_numbers
 
+```
 CREATE TABLE phone_numbers (
     id BIGSERIAL PRIMARY KEY,
     number VARCHAR(15) NOT NULL,
     is_primary BOOLEAN DEFAULT FALSE,
     user_id BIGINT NOT NULL,
-
     CONSTRAINT fk_phone_user
         FOREIGN KEY (user_id)
         REFERENCES users(id)
 );
+```
 
 TABLE : medical_records
 
+```
 CREATE TABLE medical_records (
     id SERIAL PRIMARY KEY,
     allergies VARCHAR(100),
@@ -73,9 +81,11 @@ CREATE TABLE medical_records (
         REFERENCES users(id)
         ON DELETE CASCADE
 );
+```
 
 TABLE : alert_locations
 
+```
 CREATE TABLE alert_locations (
     id BIGSERIAL PRIMARY KEY,
     latitude DOUBLE PRECISION NOT NULL,
@@ -83,9 +93,11 @@ CREATE TABLE alert_locations (
     accuracy DOUBLE PRECISION,
     source VARCHAR(50)
 );
+```
 
 TABLE : alerts
 
+```
 CREATE TABLE alerts (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
@@ -104,9 +116,11 @@ CREATE TABLE alerts (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE
 );
+```
 
 TABLE : call_attempt
 
+```
 CREATE TABLE call_logs (
     id BIGSERIAL PRIMARY KEY,
     alert_id BIGINT,
@@ -122,9 +136,11 @@ CREATE TABLE call_logs (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+```
 
 TABLE : Otp
 
+```
 CREATE TABLE otp (
     id BIGSERIAL PRIMARY KEY,
     phone_number VARCHAR(15) NOT NULL,
@@ -137,3 +153,4 @@ CREATE TABLE otp (
     delivery_status VARCHAR (20),
     retry_count INTEGER
 );
+```
